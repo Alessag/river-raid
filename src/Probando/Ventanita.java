@@ -9,6 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -17,9 +18,11 @@ public class Ventanita extends JFrame {
 
     // private JFrame ventana;
     private Cuadradito c1;
-    private BichitoMove bm;
-    private BichitoMove bm2;
+    private Enemigo bm;
+    private Enemigo bm2;
     private JPanel panel;
+    //private JPanel gasolina;
+    private int nivelGasolina;
     public static int ALTO;
     public static int ANCHO;
     private Timer tiempo;
@@ -35,12 +38,18 @@ public class Ventanita extends JFrame {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         //this.setResizable(false);
 
+      
         panel = new JPanel(null);
-
+        /*nivelGasolina=100;
+        gasolina = new JPanel(null);
+        gasolina.setBounds(100, 100, 100, 100);
+        gasolina.setBackground(Color.red);
+        gasolina.setForeground(Color.BLUE);
+        gasolina.setVisible(true);*/
         c1 = new Cuadradito();
 
-        bm = new BichitoMove(10, 50);
-        bm2 = new BichitoMove(30, 200);
+        bm = new Enemigo(10, 50);
+        bm2 = new Enemigo(30, 200);
 
         /*
          JButton texto = new JButton("HEHE");
@@ -48,11 +57,14 @@ public class Ventanita extends JFrame {
          texto.setFocusable(false);
          panel.add(texto);
          */
+        //panel.add(gasolina);
         panel.add(c1);
         panel.add(bm);
         panel.add(bm2);
+        
 
         this.addKeyListener(new KeyAdapter() {
+            
 
             @Override
             public void keyPressed(KeyEvent e) {
@@ -79,7 +91,7 @@ public class Ventanita extends JFrame {
                 bajarEntidades();
                 bm.MoveAlone();
                 bm2.MoveAlone();
-
+                llevarGasolinaACucuta(1);
             }
         });
 
@@ -94,5 +106,17 @@ public class Ventanita extends JFrame {
         bm.bajar();
         bm2.bajar();
     }
-
+    
+    public void llevarGasolinaACucuta(int paralelepipero){
+        if(paralelepipero==1){
+            nivelGasolina--;
+        }
+        if(paralelepipero==2){
+            nivelGasolina++;
+        }
+        if(nivelGasolina<=0){
+            System.out.println("perdio");
+        }
+        //gasolina.setText(String.valueOf(nivelGasolina));
+    }
 }

@@ -1,14 +1,17 @@
 package Probando;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import javax.swing.JFrame;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -16,15 +19,22 @@ import javax.swing.Timer;
 public class RiverRaid extends JFrame {
 
     // private JFrame ventana;
-    private Cuadradito c1;
-    private BichitoMove bm;
-    private BichitoMove bm2;
     private JPanel panel;
+    private Cuadradito avion_pprincipal;
+    private Enemigo enemigo1;
+    private Enemigo enemigo2;
+    private Gasolina nivelGasolina; 
+    private Vidas vidas; 
+    private Timer tiempo;
+    private Graphics g;
+    private ArrayList<Disparos> balas;
     public static int ALTO = 500;
     public static int ANCHO = 700;
-    private Timer tiempo;
+    
+    
 
     public RiverRaid() {
+        //Para que se vea bien la ventana principal
         super("Ventanita");
         /*ALTO = 650;
         ANCHO = 1000;*/
@@ -37,10 +47,12 @@ public class RiverRaid extends JFrame {
 
         panel = new JPanel(null);
 
-        c1 = new Cuadradito();
-
-        bm = new BichitoMove(10, 50);
-        bm2 = new BichitoMove(30, 200);
+        avion_pprincipal = new Cuadradito();
+        enemigo1 = new Enemigo(10, 50);
+        enemigo2 = new Enemigo(30, 200);
+        nivelGasolina = new Gasolina();
+        vidas = new Vidas();
+        balas = new ArrayList<>();
 
         /*
          JButton texto = new JButton("HEHE");
@@ -48,26 +60,39 @@ public class RiverRaid extends JFrame {
          texto.setFocusable(false);
          panel.add(texto);
          */
-        panel.add(c1);
-        panel.add(bm);
-        panel.add(bm2);
-
+        panel.add(avion_pprincipal);
+        panel.add(enemigo1);
+        panel.add(enemigo2);
+        panel.add(nivelGasolina);
+        panel.add(vidas);
+        
+        
+        //Manejo de Eventos, para que haga las cositas 
         this.addKeyListener(new KeyAdapter() {
 
             @Override
             public void keyPressed(KeyEvent e) {
 
-                c1.move(e.getKeyCode());
-
+                avion_pprincipal.move(e.getKeyCode());
             }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                    Disparos disparito = new Disparos(avion_pprincipal.getX() + avion_pprincipal.getWidth()/2, avion_pprincipal.getY());
+                    balas.add(disparito);
+                    panel.add(disparito);
+                }
+            }
+            
 
         });
 
-        c1.addMouseListener(new MouseAdapter() {
+        avion_pprincipal.addMouseListener(new MouseAdapter() {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                c1.setBackground(Color.CYAN);
+                avion_pprincipal.setBackground(Color.CYAN);
                 panel.setBackground(Color.BLACK);
             }
 
@@ -77,22 +102,86 @@ public class RiverRaid extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 bajarEntidades();
-                bm.MoveAlone();
-                bm2.MoveAlone();
-
+                enemigo1.MoveAlone();
+                enemigo2.MoveAlone();
+                if(avion_pprincipal.getBounds().intersects(enemigo1.getBounds()) || avion_pprincipal.getBounds().intersects(enemigo2.getBounds()) ){
+                   // JOptionPane.showMessageDialog(null, "perdiste una vida");
+                    //System.out.println("ganando gasolina");
+                    avion_pprincipal.TanqueandoGasolina(1);
+                   
+                    
+                   
+                  // cerrarVentana();
+                }
+                else{ 
+                   // System.out.println("perdiendo gasolina"); 
+                    
+                    avion_pprincipal.TanqueandoGasolina(-1);
+                    //avion_pprincipal.TanqueandoGasolina(0);
+                        vidas.quitarVida();
+                    
+                }
+               
+                
+                /*if(avion_pprincipal.getBounds().intersects(enemigo2.getBounds())){
+                          // JOptionPane.showMessageDialog(null, "perdiste una vida");
+                    //System.out.println("ganando gasolina");
+                    avion_pprincipal.TanqueandoGasolina(1);
+                   
+                  // cerrarVentana();
+                }
+                else{ 
+                    
+                   // System.out.println("perdiendo gasolina"); 
+                    
+                    avion_pprincipal.TanqueandoGasolina(-1);
+                    //avion_pprincipal.TanqueandoGasolina(0);
+                }*/
+                
+                for (int i = 0; i < balas.size(); i++) {
+                    //balas.get(i).setBounds(balas.get(i).getX(), balas.get(i).getY()-10, Disparos.ANCHO, Disparos.ALTO);
+                    balas.get(i).mover();
+                    
+                }
+                
+                for (int i = 0; i < balas.size(); i++) {
+                    if (balas.get(i).getY() < 0) {
+                        panel.remove(balas.get(i));
+                        balas.remove(i);
+                    }
+                }
+                
+                nivelGasolina.setGasolinaNivel(avion_pprincipal.getGasolina());
             }
         });
-
         tiempo.start();
 
         this.setContentPane(panel);
-
         this.setVisible(true);
     }
 
     public void bajarEntidades() {
-        bm.bajar();
-        bm2.bajar();
+        //bm.bajar();
+        //bm2.bajar();
     }
+    
+    public void cerrarVentana(){
+        this.dispose();
+        System.exit(0);
+    }
+    
+    /* public void Gasolineando(int gasolina){
+        if(gasolina==1){
+            gasolina--;
+        }
+        if(gasolina==2){
+            gasolina++;
+        }
+        if(gasolina<=0){
+            System.out.println("perdio");
+        }
+        //gasolina.setText(String.valueOf(nivelGasolina));
+    }*/
+    
 
 }
