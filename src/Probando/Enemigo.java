@@ -1,10 +1,7 @@
 package Probando;
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JPanel;
-import javax.swing.Timer;
 
 /*@author alessandra.girardi*/
 public class Enemigo extends JPanel {
@@ -13,8 +10,16 @@ public class Enemigo extends JPanel {
     int ALTO; 
     int posx;
     int posy;
+    int maxx = Probando.RiverRaid.ANCHO; // Posición aleatorea en x 
+    int maxy = Probando.RiverRaid.ALTO; // Posición aleatorea en y 
+    int aleax = (int) (Math.random() * maxx) +1; 
+    int aleay = (int) (Math.random() * 4) +1; 
     boolean direccion; 
-
+    
+    /**
+     *
+     * Constructor de la clase Enemigo
+     */
     public Enemigo(int posx, int posy) {
         
         ALTO = 50;
@@ -29,6 +34,10 @@ public class Enemigo extends JPanel {
 
     }
 
+    /**
+     *
+     * Metodo para mover  a un enemigo
+     */
     public void MoveAlone() {
  
         if(posx > RiverRaid.ANCHO-ANCHO){
@@ -65,11 +74,18 @@ public class Enemigo extends JPanel {
     }
     
     /**
-     * Metodo para que cada enemigo baje solo y se actualice en la RiverRaid 
+     * Metodo para que cada enemigo baje solo y se actualice en la pantalla RiverRaid 
      */
     public void bajar(){
-        this.posy+=1;
+        this.posy+=15;
         this.setBounds(posx, posy, ANCHO,ALTO);
+    }
+    
+    public void subir(){
+        posx = aleax;
+        System.out.println("ALEA EN QUE EN SUBIR ENEMIGO: " +posx);
+        posy = aleay;
+        this.setBounds(posx, posy, ANCHO, ALTO);
     }
 
 }
