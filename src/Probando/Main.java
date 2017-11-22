@@ -1,11 +1,17 @@
 package Probando;
 
+
 /*@author Alessandra*/
 public class Main {
-
+    /**
+     * Metodo principal que ejecuta el programa
+     * @param args 
+     */
     public static void main(String[] args) {
-       
-        RiverRaid ventanita = new RiverRaid();
+        
+        Menu panel = new Menu();
+        //panel.setVisible(true);
+        
     }
 
 }
